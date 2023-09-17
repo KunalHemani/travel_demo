@@ -8,21 +8,41 @@ class PostScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage("assets/images/t1.jpg"),
-            fit: BoxFit.cover,
-          )
-        ),
-        child: Scaffold(
-          backgroundColor: Colors.transparent,
-          appBar: PreferredSize(
-            preferredSize: Size.fromHeight(90),
-            child: PostAppBar(),
-          ),
-          bottomNavigationBar: PostBottomBar(),
-        ),
+      child: ListView.builder(
+        shrinkWrap: true,
+        itemBuilder: (BuildContext context, int index) {
+          return Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                  image: AssetImage("assets/images/t5.jpg"),
+              ),
+            ),
+            child: Scaffold(
+              backgroundColor: Colors.transparent,
+              appBar: PreferredSize(
+                preferredSize: Size.fromHeight(90),
+                child: PostAppBar(),
+              ),
+              bottomNavigationBar: PostBottomBar(),
+            ),
+          );
+        },
+        // Container(
+        //   decoration: BoxDecoration(
+        //     image: DecorationImage(
+        //       image: AssetImage("assets/images/t1.jpg"),
+        //       fit: BoxFit.cover,
+        //     )
+        //   ),
+        //   child: Scaffold(
+        //     backgroundColor: Colors.transparent,
+        //     appBar: PreferredSize(
+        //       preferredSize: Size.fromHeight(90),
+        //       child: PostAppBar(),
+        //     ),
+        //     bottomNavigationBar: PostBottomBar(),
+        //   ),
+        // ),
       ),
     );
   }

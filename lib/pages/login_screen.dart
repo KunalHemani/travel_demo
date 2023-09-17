@@ -1,4 +1,3 @@
-import 'package:ex_form_db/pages/card_screen.dart';
 import 'package:ex_form_db/pages/sample_card.dart';
 import 'package:ex_form_db/pages/signup.dart';
 import 'package:ex_form_db/pages/welcome_screen.dart';
