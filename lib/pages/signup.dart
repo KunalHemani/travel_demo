@@ -1,53 +1,230 @@
-import 'package:ex_form_db/pages/welcome_screen.dart';
+import 'package:ex_form_db/pages/cityname.dart';
+import 'package:ex_form_db/pages/update_package.dart';
+import 'package:ex_form_db/utils/sql_helper.dart';
+import 'package:ex_form_db/widgets/app_buttons.dart';
+import 'package:ex_form_db/widgets/responsive_button.dart';
 import 'package:flutter/material.dart';
-class zen extends StatefulWidget {
-  const zen({super.key});
+import 'package:hexcolor/hexcolor.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:cupertino_icons/cupertino_icons.dart';
+
+class DetailPage extends StatefulWidget {
+  final int? city_index;
+  DetailPage({super.key, this.city_index});
 
   @override
-  State<zen> createState() => _zenState();
+  State<DetailPage> createState() => _DetailPageState();
 }
 
-class _zenState extends State<zen> {
+class _DetailPageState extends State<DetailPage> {
+  late int? city_index;
+
+  List<Map<String, dynamic>> _journals = [];
+  bool _isLoading = true;
+  int _choiceIndex = 0;
+
+  void _refreshJournals() async {
+    final data = await SQLHelper.getItems(
+        switchArg: "all", tableName: "package");
+
+    setState(() {
+      _journals = data;
+      print(_journals.toString());
+      // _walletjournals = cashWalletdata;
+      // _categoriesjournals = categoriesdata;
+      _isLoading = false;
+      _choiceIndex = 0;
+      // offsetN = 10;
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    city_index = widget.city_index;
+    _refreshJournals();
+  }
+
+  int selectedIndex=-1;
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Form(
-        child: Column(
-          children: [
-            Text("My first flutter App",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 35
-              ),
-              ),
-            SizedBox(height: 25),
-            TextFormField(
-              decoration: InputDecoration(
-                labelText: "Email",
-                prefixIcon: Icon(Icons.email_rounded),
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          centerTitle: true,
+          title: Text(_journals[city_index!]["title"]),
+        ),
 
-              ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) =>
+                        UpdatePackage()));
+          },
+          child: Text("ADMIN"),
+        ),
+        body: SingleChildScrollView(
+          child: Container(
+            width: double.maxFinite,
+            height: double.maxFinite,
+            child: Stack(
+              children: [
+                Positioned(
+                  left: 0,
+                    right: 0,
+                    child: Container(
+                      width: double.maxFinite,
+                      height: 400,
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage("assets/images/t1.jpg"),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                )),
+                // Positioned(
+                //     left: 20,
+                //     top: 50,
+                //     child: Row(
+                //       children: [
+                //         IconButton(onPressed: (){}, icon: Icon(Icons.menu,
+                //         color: Colors.white)
+                //         ),
+                //       ],
+                //     )),
+                Positioned(
+                  top: 320,
+                    child: Container(
+                      padding: EdgeInsets.only(left: 20, right: 20, top: 20),
+                      width: MediaQuery.of(context).size.width,
+                      height: 550,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(30),
+                        color: Colors.white,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(_journals[city_index!]["title"], style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold),),
+                              Text(_journals[city_index!]["amount"].toString(), style: TextStyle(fontSize: 32),)
+                            ],
+                          ),
+                          SizedBox(height: 10),
+                          Row(
+                            children: [
+                              Icon(Icons.location_on, size: 22,color: Colors.deepPurpleAccent,),
+                              SizedBox(width: 5),
+                              Text(_journals[city_index!]["title"] + ", India", style: TextStyle(fontSize: 17, color: Colors.deepPurpleAccent),),
+                            ],
+                          ),
+                          // Wrap(
+                          //   children: List.generate(5, (index){
+                          //       return Icon(Icons.star, color: Colors.yellow,);
+                          //     }),
+                          // ),,
+                          SizedBox(height: 25),
+                          Text("People",
+                            style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black.withOpacity(0.8)
+                            ),
+                          ),
+                          SizedBox(height: 4),
+                          Text("Number of people in your group",
+                            style: TextStyle(
+                                fontSize: 17,
+                                color: Colors.grey
+                            ),
+                          ),
+                          SizedBox(height: 10),
+                          Wrap(
+                            children: List.generate(5, (index){
+                              return InkWell(
+                                onTap: (){
+                                  setState(() {
+                                    selectedIndex=index;
+                                  });
+                                },
+                                child: Container(
+                                  margin: EdgeInsets.only(right: 10),
+                                  child: AppButtons(
+                                      color: selectedIndex==index?Colors.white:Colors.black,
+                                      // backgroundColor: selcetedIndex==index?HexColor("000000FF"):HexColor("B0BAC7FF"),
+                                    backgroundColor: selectedIndex==index?Colors.blue.shade200:Colors.white,
+                                      size: 60,
+                                      borderColor: selectedIndex==index?Colors.black:Colors.grey,
+                                      text: (index + 1).toString(),
+                                  ),
+                                ),
+                              );
+                            }),
+                          ),
+                          SizedBox(height: 25),
+                          Text("Description",
+                            style: TextStyle(
+                              fontSize: 25,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black
+                          ),
+                          ),
+                          SizedBox(height: 10),
+                          Text(_journals[city_index!]["description"],
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.black,
+                              fontWeight: FontWeight.w400,
+                            ),
+                            textAlign: TextAlign.justify,
+                          ),
+                        ],
+                      ),
+                ),),
+                SizedBox(height: 10),
+                Padding(
+                  padding: const EdgeInsets.only(top: 700, left: 145),
+                  child: ElevatedButton(
+                      onPressed: (){}, child: Text("BOOK NOW",
+                  style: TextStyle(fontSize: 20),)),
+                ),
+                // Positioned(
+                //   child: InkWell(
+                //     onTap: (){},
+                //     child: Container(
+                //       margin: EdgeInsets.only(bottom: 10, top: 850),
+                //       height: 50,
+                //       child: Text("BOOK NOW",
+                //       style: TextStyle(
+                //         fontSize: 30,
+                //       ),),
+                //       color: Colors.deepPurpleAccent,
+                //     ),
+                //   ),
+                // )
+                // Positioned(
+                //     bottom: 20,
+                //     top: 500,
+                //     left: 20,
+                //     right: 20,
+                //     child: Row(
+                //       children: [
+                //         Container(
+                //           height: 50,
+                //           child: ResponsiveButton(),
+                //         )
+                //       ],
+                // ))
+              ],
             ),
-            SizedBox(height: 15),
-            TextFormField(
-              obscureText: true,
-              decoration: InputDecoration(
-                labelText: "password",
-                prefixIcon: Icon(Icons.password_rounded),
-
-              ),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.push(context, MaterialPageRoute(
-                    builder: (context) => WelcomeScreen()));
-              },
-              child: Text("SEND"),
-            )
-          ],
+          ),
         ),
       ),
     );
-
   }
 }

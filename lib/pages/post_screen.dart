@@ -14,7 +14,7 @@ class PostScreen extends StatelessWidget {
           return Container(
             decoration: BoxDecoration(
               image: DecorationImage(
-                  image: AssetImage("assets/images/t5.jpg"),
+                  image: AssetImage("assets/images/t2.jpg"),
               ),
             ),
             child: Scaffold(

@@ -1,3 +1,7 @@
+import 'package:ex_form_db/pages/cityname.dart';
+import 'package:ex_form_db/pages/insert_package.dart';
+import 'package:ex_form_db/pages/signup.dart';
+import 'package:ex_form_db/utils/sql_helper.dart';
 import 'package:ex_form_db/widgets/card_bottom_navigation.dart';
 import 'package:ex_form_db/pages/post_screen.dart';
 import 'package:flutter/material.dart';
@@ -21,8 +25,31 @@ class _SampleCardState extends State<SampleCard> {
     'New Added'
   ];
 
-  var cityname = ['Goa','Amritsar', 'Kerala', 'Kedarnath', 'Kutch', 'Agra'];
+  List<Map<String, dynamic>> _journals = [];
+  bool _isLoading = true;
+  int _choiceIndex = 0;
 
+  void _refreshJournals() async {
+    final data = await SQLHelper.getItems(
+        switchArg: "all", tableName: "package");
+
+    setState(() {
+      _journals = data;
+      print(_journals.toString());
+      // _walletjournals = cashWalletdata;
+      // _categoriesjournals = categoriesdata;
+      _isLoading = false;
+      _choiceIndex = 0;
+      // offsetN = 10;
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _refreshJournals();
+  }
   @override
   Widget build(BuildContext context) {
     // int i; // Category
@@ -95,6 +122,14 @@ class _SampleCardState extends State<SampleCard> {
               //   height: 12,
               // ),
 
+              ElevatedButton(onPressed: (){
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            InsertPackage()));
+              }, child: Text("ADMIN")),
+
               SizedBox(
                 height: 52,
                 child: ListView.builder(
@@ -126,7 +161,7 @@ class _SampleCardState extends State<SampleCard> {
               SizedBox(
                 height: 620,
                 child: ListView.builder(
-                    itemCount: cityname.length,
+                    itemCount: _journals.length,
                     shrinkWrap: true,
                     scrollDirection: Axis.vertical,
                     itemBuilder: (BuildContext context, int index) {
@@ -140,7 +175,7 @@ class _SampleCardState extends State<SampleCard> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
-                                        const PostScreen()));
+                                        DetailPage(city_index: index)));
                               },
                               child: Container(
                                 height: 250,
@@ -160,7 +195,7 @@ class _SampleCardState extends State<SampleCard> {
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text(cityname[index],
+                                  Text(_journals[index]["title"],
                                     style: const TextStyle(
                                         fontSize: 20,
                                         fontWeight: FontWeight.w500),
@@ -441,7 +476,7 @@ class _SampleCardState extends State<SampleCard> {
 //               //     Row(
 //               //       mainAxisAlignment: MainAxisAlignment.spaceAround,
 //               //       children: [
-//               //         Expanded(child: Image.asset("assets/images/t6.jpg"),),
+//               //         Expanded(child: Image.asset("assets/images/t5.jpg"),),
 //               //       ],
 //               //     )
 //               //   ],

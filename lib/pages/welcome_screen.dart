@@ -1,5 +1,11 @@
-import 'package:ex_form_db/pages/login_screen.dart';
+import 'package:ex_form_db/widgets/card_bottom_navigation.dart';
+import 'package:ex_form_db/pages/post_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:ex_form_db/pages/login_screen.dart';
+import 'package:ex_form_db/pages/welcome_screen.dart';
+import 'package:sqflite/sqflite.dart' as sql;
+import 'package:ex_form_db/utils/sql_helper.dart';
+
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -9,7 +15,7 @@ class WelcomeScreen extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         image: DecorationImage(
-          image: AssetImage("assets/images/ex_bg.jpg"),
+          image: AssetImage("assets/images/t6.jpg"),
           fit: BoxFit.cover,
         )
       ),
