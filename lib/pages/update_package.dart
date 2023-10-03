@@ -102,6 +102,7 @@ class _UpdatePackageState extends State<UpdatePackage> {
       String title,
       String? description,
       double amount,
+      String coverImage
       // String? wallet,
       // String type,
       // String? category,
@@ -114,6 +115,7 @@ class _UpdatePackageState extends State<UpdatePackage> {
       'title': title,
       'description': description,
       'amount': amount,
+      'coverImage' : coverImage,
       // 'wallet': wallet,
       // 'type': type,
       // 'category': category,

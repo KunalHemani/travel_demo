@@ -58,7 +58,7 @@ class _SampleCardState extends State<SampleCard> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: const Text("Multiple Images"),
+        title: const Text("Packages"),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -183,9 +183,9 @@ class _SampleCardState extends State<SampleCard> {
                                   color: Colors.black,
                                   borderRadius: BorderRadius.circular(20),
                                   image: DecorationImage(
-                                    image: AssetImage(
-                                        "assets/images/t${index + 1}.jpg"),
-                                    fit: BoxFit.cover,
+                                    image: NetworkImage(_journals[index]["coverImage"],
+                                    scale: 1)
+                                    // fit: BoxFit.cover,
                                   ),
                                 ),
                               ),
