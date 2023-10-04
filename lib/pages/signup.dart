@@ -1,4 +1,5 @@
 import 'package:ex_form_db/pages/cityname.dart';
+import 'package:ex_form_db/pages/update.dart';
 import 'package:ex_form_db/pages/update_package.dart';
 import 'package:ex_form_db/utils/sql_helper.dart';
 import 'package:ex_form_db/widgets/app_buttons.dart';
@@ -18,10 +19,16 @@ class DetailPage extends StatefulWidget {
 
 class _DetailPageState extends State<DetailPage> {
   late int? city_index;
+  var selectedIndex;
+
+  String _titleController = "";
+  String _descriptionController = "";
+  double _amountController = 0.0;
+  String _imageController = "";
 
   List<Map<String, dynamic>> _journals = [];
   bool _isLoading = true;
-  int _choiceIndex = 0;
+  // int _choiceIndex = 0;
 
   void _refreshJournals() async {
     final data = await SQLHelper.getItems(
@@ -33,7 +40,7 @@ class _DetailPageState extends State<DetailPage> {
       // _walletjournals = cashWalletdata;
       // _categoriesjournals = categoriesdata;
       _isLoading = false;
-      _choiceIndex = 0;
+      // _choiceIndex = 0;
       // offsetN = 10;
     });
   }
@@ -46,7 +53,34 @@ class _DetailPageState extends State<DetailPage> {
     _refreshJournals();
   }
 
-  int selectedIndex=-1;
+  // Future<void> _updateItem(int id) async {
+  //   await SQLHelper.updateItem(
+  //     // id,
+  //       _titleController,
+  //       _descriptionController,
+  //       _amountController,
+  //       _imageController
+  //   );
+  //   _refreshJournals();
+  // }
+
+  void _showForm(int? id) async {
+    if (id != null) {
+      final existingJournal =
+      _journals.firstWhere((element) => element['id'] == id);
+      _titleController = existingJournal['title'];
+      _descriptionController = existingJournal['description'];
+      _amountController = existingJournal['amount'];
+      _imageController = existingJournal['coverImage'];
+      // _pId.text= existingJournal['pId'];
+      // _pNm .text= existingJournal['pNm'];
+      // _appTime.text = existingJournal['appTime'];
+    }
+
+    int selectedIndex = -1;
+
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -62,9 +96,9 @@ class _DetailPageState extends State<DetailPage> {
                 context,
                 MaterialPageRoute(
                     builder: (context) =>
-                        UpdatePackage()));
+                        Update(city_index: city_index,)));
           },
-          child: Text("ADMIN"),
+          child: Icon(Icons.edit),
         ),
         body: SingleChildScrollView(
           child: Container(
@@ -73,18 +107,19 @@ class _DetailPageState extends State<DetailPage> {
             child: Stack(
               children: [
                 Positioned(
-                  left: 0,
+                    left: 0,
                     right: 0,
                     child: Container(
                       width: double.maxFinite,
                       height: 400,
                       decoration: BoxDecoration(
                         image: DecorationImage(
-                          image: AssetImage("assets/images/t1.jpg"),
+                          image: NetworkImage(
+                              _journals[city_index!]["coverImage"]),
                           fit: BoxFit.cover,
                         ),
                       ),
-                )),
+                    )),
                 // Positioned(
                 //     left: 20,
                 //     top: 50,
@@ -97,101 +132,115 @@ class _DetailPageState extends State<DetailPage> {
                 //     )),
                 Positioned(
                   top: 320,
-                    child: Container(
-                      padding: EdgeInsets.only(left: 20, right: 20, top: 20),
-                      width: MediaQuery.of(context).size.width,
-                      height: 550,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(30),
-                        color: Colors.white,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(_journals[city_index!]["title"], style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold),),
-                              Text(_journals[city_index!]["amount"].toString(), style: TextStyle(fontSize: 32),)
-                            ],
+                  child: Container(
+                    padding: EdgeInsets.only(left: 20, right: 20, top: 20),
+                    width: MediaQuery
+                        .of(context)
+                        .size
+                        .width,
+                    height: 550,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(30),
+                      color: Colors.white,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(_journals[city_index!]["title"],
+                              style: TextStyle(fontSize: 35,
+                                  fontWeight: FontWeight.bold),),
+                            Text(_journals[city_index!]["amount"].toString(),
+                              style: TextStyle(fontSize: 32),)
+                          ],
+                        ),
+                        SizedBox(height: 10),
+                        Row(
+                          children: [
+                            Icon(Icons.location_on, size: 22,
+                              color: Colors.deepPurpleAccent,),
+                            SizedBox(width: 5),
+                            Text(_journals[city_index!]["title"] + ", India",
+                              style: TextStyle(fontSize: 17,
+                                  color: Colors.deepPurpleAccent),),
+                          ],
+                        ),
+                        // Wrap(
+                        //   children: List.generate(5, (index){
+                        //       return Icon(Icons.star, color: Colors.yellow,);
+                        //     }),
+                        // ),,
+                        SizedBox(height: 25),
+                        Text("People",
+                          style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black.withOpacity(0.8)
                           ),
-                          SizedBox(height: 10),
-                          Row(
-                            children: [
-                              Icon(Icons.location_on, size: 22,color: Colors.deepPurpleAccent,),
-                              SizedBox(width: 5),
-                              Text(_journals[city_index!]["title"] + ", India", style: TextStyle(fontSize: 17, color: Colors.deepPurpleAccent),),
-                            ],
+                        ),
+                        SizedBox(height: 4),
+                        Text("Number of people in your group",
+                          style: TextStyle(
+                              fontSize: 17,
+                              color: Colors.grey
                           ),
-                          // Wrap(
-                          //   children: List.generate(5, (index){
-                          //       return Icon(Icons.star, color: Colors.yellow,);
-                          //     }),
-                          // ),,
-                          SizedBox(height: 25),
-                          Text("People",
-                            style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black.withOpacity(0.8)
-                            ),
-                          ),
-                          SizedBox(height: 4),
-                          Text("Number of people in your group",
-                            style: TextStyle(
-                                fontSize: 17,
-                                color: Colors.grey
-                            ),
-                          ),
-                          SizedBox(height: 10),
-                          Wrap(
-                            children: List.generate(5, (index){
-                              return InkWell(
-                                onTap: (){
-                                  setState(() {
-                                    selectedIndex=index;
-                                  });
-                                },
-                                child: Container(
-                                  margin: EdgeInsets.only(right: 10),
-                                  child: AppButtons(
-                                      color: selectedIndex==index?Colors.white:Colors.black,
-                                      // backgroundColor: selcetedIndex==index?HexColor("000000FF"):HexColor("B0BAC7FF"),
-                                    backgroundColor: selectedIndex==index?Colors.blue.shade200:Colors.white,
-                                      size: 60,
-                                      borderColor: selectedIndex==index?Colors.black:Colors.grey,
-                                      text: (index + 1).toString(),
-                                  ),
+                        ),
+                        SizedBox(height: 10),
+                        Wrap(
+                          children: List.generate(5, (index) {
+                            return InkWell(
+                              onTap: () {
+                                setState(() {
+                                  selectedIndex = index;
+                                });
+                              },
+                              child: Container(
+                                margin: EdgeInsets.only(right: 10),
+                                child: AppButtons(
+                                  color: selectedIndex == index
+                                      ? Colors.white
+                                      : Colors.black,
+                                  // backgroundColor: selcetedIndex==index?HexColor("000000FF"):HexColor("B0BAC7FF"),
+                                  backgroundColor: selectedIndex == index
+                                      ? Colors.blue.shade200
+                                      : Colors.white,
+                                  size: 60,
+                                  borderColor: selectedIndex == index ? Colors
+                                      .black : Colors.grey,
+                                  text: (index + 1).toString(),
                                 ),
-                              );
-                            }),
-                          ),
-                          SizedBox(height: 25),
-                          Text("Description",
-                            style: TextStyle(
+                              ),
+                            );
+                          }),
+                        ),
+                        SizedBox(height: 25),
+                        Text("Description",
+                          style: TextStyle(
                               fontSize: 25,
                               fontWeight: FontWeight.bold,
                               color: Colors.black
                           ),
+                        ),
+                        SizedBox(height: 10),
+                        Text(_journals[city_index!]["description"],
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.black,
+                            fontWeight: FontWeight.w400,
                           ),
-                          SizedBox(height: 10),
-                          Text(_journals[city_index!]["description"],
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.black,
-                              fontWeight: FontWeight.w400,
-                            ),
-                            textAlign: TextAlign.justify,
-                          ),
-                        ],
-                      ),
-                ),),
+                          textAlign: TextAlign.justify,
+                        ),
+                      ],
+                    ),
+                  ),),
                 SizedBox(height: 10),
                 Padding(
                   padding: const EdgeInsets.only(top: 700, left: 145),
                   child: ElevatedButton(
-                      onPressed: (){}, child: Text("BOOK NOW",
-                  style: TextStyle(fontSize: 20),)),
+                      onPressed: () {}, child: Text("BOOK NOW",
+                    style: TextStyle(fontSize: 20),)),
                 ),
                 // Positioned(
                 //   child: InkWell(

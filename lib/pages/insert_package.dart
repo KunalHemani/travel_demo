@@ -36,11 +36,7 @@ class _InsertPackageState extends State<InsertPackage> {
         _amountController,
         _imageController
 
-        // (_walletController.isEmpty) ? "Cash" : _walletController,
-        // _dropdownValue,
-        // _categoryController,
-        // dateFormat.format(_datetime),
-      );
+        );
     } catch (e) {
       print(e);
     }

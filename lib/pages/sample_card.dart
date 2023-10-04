@@ -50,6 +50,15 @@ class _SampleCardState extends State<SampleCard> {
     super.initState();
     _refreshJournals();
   }
+
+  void _deleteItem(int id) async{
+    await SQLHelper.deleteItem(id);
+    ScaffoldMessenger.of (context).showSnackBar (const SnackBar(
+      content: Text('Successfully deleted a Record !'),
+    ));
+    _refreshJournals();
+  }
+
   @override
   Widget build(BuildContext context) {
     // int i; // Category
@@ -184,7 +193,7 @@ class _SampleCardState extends State<SampleCard> {
                                   borderRadius: BorderRadius.circular(20),
                                   image: DecorationImage(
                                     image: NetworkImage(_journals[index]["coverImage"],
-                                    scale: 1)
+                                    )
                                     // fit: BoxFit.cover,
                                   ),
                                 ),
@@ -200,7 +209,10 @@ class _SampleCardState extends State<SampleCard> {
                                         fontSize: 20,
                                         fontWeight: FontWeight.w500),
                                   ),
-                                  const Icon(Icons.flight_takeoff, size: 29),
+                                  IconButton(onPressed: () =>
+                                    _deleteItem(_journals[index]["id"]),
+                                    icon: Icon(Icons.delete))
+                                  // const Icon(Icons.flight_takeoff, size: 29),
                                 ],
                               ),
                             ),

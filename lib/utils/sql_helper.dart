@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart' as sql;
 
 class SQLHelper {
@@ -17,6 +18,18 @@ class SQLHelper {
           password TEXT, 
           createdAt TIMESTAMP NOT NULL
           )""");
+
+    // await database.execute("""UPDATE package
+    // SET title = "_journals[index]["title"]",
+    // description = "_journals[index]["description"]",
+    // amount = "_journals[index]["amount"]",
+    // coverImage = "_journals[index]["coverImage"]"
+    // WHERE id = "_journals[index]["id"]"
+    // """);
+    //
+    // await database.execute("""DELETE package
+    // WHERE id = "_journals[index]["id"]"
+    // """);
 
     // await SQLHelper.createWalletItem(0, "Cash", null);
   }
@@ -99,7 +112,6 @@ class SQLHelper {
         return db.rawQuery("select * from transactions");
     }
   }
-
   // create record
   static Future<int> createItem(
       String title,
@@ -109,162 +121,210 @@ class SQLHelper {
       ) async {
     final db = await SQLHelper.db();
 
-    // wallet = (wallet ?? "Cash");
-
     final data = {
       'title': title,
       'description': description,
       'amount': amount,
       'coverImage' : path,
-      // 'wallet': wallet,
-      // 'type': type,
-      // 'category': category,
-      // "createdAt": dateTime
-    };
+      };
     final id = await db.insert(
       'package',
       data,
       conflictAlgorithm: sql.ConflictAlgorithm.replace,
     );
-
-    // await updateWalletAmount(wallet, amount);
-
     return id;
   }
 
-  // static Future<void> updateWalletAmount(String wallet, double amount) async {
+  static Future<int> updateItem(int indexController, String titleController, String descriptionController, double amountController, String imageController) async {
+    final db = await SQLHelper.db();
+
+    try {
+      final result = await db.rawUpdate(
+        'UPDATE package SET title = ?, description = ?, amount = ?, coverImage = ? WHERE id = ?',
+        [titleController, descriptionController, amountController, imageController, indexController],
+      );
+      return result;
+    } catch (e) {
+      print('Error updating item: $e');
+      // You can handle the error further, throw it, log it, etc.
+      // throw e; // Uncomment this line if you want to propagate the error to the calling code.
+      return -1; // Or return an error code, whatever makes sense for your application.
+    }
+  }
+
+
+  // static updateItem(int indexController, String titleController, String descriptionController, double amountController, String imageController) async {
   //   final db = await SQLHelper.db();
-  //
-  //   final result = await db.rawQuery(
-  //     'SELECT * FROM wallets WHERE title = ?',
-  //     [wallet],
-  //   );
-  //
-  //   if (result.isEmpty) {
-  //     await db.insert(
-  //       'wallets',
-  //       {
-  //         "title": wallet,
-  //         "amount": amount,
-  //         "updatedAt": dateFormat.format(DateTime.now()),
-  //       },
-  //       conflictAlgorithm: sql.ConflictAlgorithm.replace,
-  //     );
-  //   } else {
-  //     final total = result.first['amount'] ?? 0;
-  //     final double parsedTotal =
-  //     total is double ? total : double.tryParse(total.toString()) ?? 0;
-  //     final calculatedTotal = parsedTotal + amount;
-  //
-  //     await db.rawUpdate(
-  //       'UPDATE wallets SET amount = ?, updatedAt = ? WHERE title = ?',
-  //       [
-  //         calculatedTotal,
-  //         dateFormat.format(DateTime.now()),
-  //         wallet,
-  //       ],
-  //     );
-  //   }
-  //
-  //   loadData4NavPagesClearFun();
-  // }
-  //
-  // // create custom wallet
-  // static Future createWalletItem(
-  //     double amount, String? wallet, double? oldTransactionAmount) async {
-  //   final db = await SQLHelper.db();
-  //
-  //   wallet = (wallet ?? "Cash");
-  //   double calculatedTotal = 0.0;
-  //
-  //   final result = await db.rawQuery(
-  //     'SELECT * FROM wallets WHERE title = ?',
-  //     [wallet],
-  //   );
-  //
-  //   if (result.isEmpty) {
-  //     await db.insert(
-  //       'wallets',
-  //       {
-  //         "title": wallet,
-  //         "amount": amount,
-  //         "updatedAt": dateFormat.format(DateTime.now()),
-  //       },
-  //       conflictAlgorithm: sql.ConflictAlgorithm.replace,
-  //     );
-  //   } else {
-  //     oldTransactionAmount = (oldTransactionAmount ?? 0.0);
-  //     final total = result.first['amount'] ?? 0;
-  //     final double parsedTotal =
-  //     total is double ? total : double.tryParse(total.toString()) ?? 0;
-  //     calculatedTotal = parsedTotal + amount - oldTransactionAmount;
-  //
-  //     await db.rawUpdate(
-  //       'UPDATE wallets SET amount = ?, updatedAt = ? WHERE title = ?',
-  //       [
-  //         calculatedTotal,
-  //         dateFormat.format(DateTime.now()),
-  //         wallet,
-  //       ],
-  //     );
-  //   }
-  // }
-  //
-  // // update item
-  // static Future<int> updateItem(
-  //     int id,
-  //     String title,
-  //     String? description,
-  //     double amount,
-  //     String? wallet,
-  //     String type,
-  //     String? category,
-  //     double oldTransactionAmount,
-  //     String dateTime,
-  //     ) async {
-  //   final db = await SQLHelper.db();
-  //
-  //   final data = {
-  //     'title': title,
-  //     'description': description,
-  //     'amount': amount,
-  //     'wallet': wallet,
-  //     'type': type,
-  //     'category': category,
-  //     "createdAt": dateTime
-  //   };
-  //
-  //   final result =
-  //   db.update('transactions', data, where: "id = ?", whereArgs: [id]);
-  //
-  //   final amountDiff = amount - oldTransactionAmount;
-  //
-  //   await updateWalletAmount(wallet!, amountDiff);
-  //   return result;
-  // }
-  //
-  // // delete transaction record
-  // static Future<void> deleteItem(int id, double amount, String wallet) async {
-  //   final db = await SQLHelper.db();
+  //   // final data = {
+  //   //   'title': titleController,
+  //   //   'description': descriptionController,
+  //   //   'amount' : amountController,
+  //   //   'coverImage' : imageController
+  //   //
+  //   // };
+  //   // var id;
   //   try {
-  //     await db.delete("transactions", where: "id = ?", whereArgs: [id]);
-  //
-  //     final amountDiff = -amount;
-  //     await updateWalletAmount(wallet, amountDiff);
-  //     loadData4NavPagesClearFun();
-  //   } catch (e) {
-  //     print(e);
+  //     final result = await db.rawUpdate(
+  //       'update package set title = ?, description = ?, amount = ?, coverImage = ? where id = ?',
+  //       [
+  //         titleController,
+  //         descriptionController,
+  //         amountController,
+  //         imageController,
+  //         indexController
+  //       ],
+  //     );
+  //     return result;
   //   }
-  // }
-  //
-  // // drop database
-  // static Future<void> dropTable() async {
-  //   final db = await SQLHelper.db();
-  //   await db.execute('DROP TABLE IF EXISTS transactions');
-  //   await db.execute('DROP TABLE IF EXISTS wallets');
-  //   await SQLHelper.createTables(db);
-  //   deleteOption;
-  //   initOption();
-  //   loadData4NavPagesClearFun();
-  // }
+  //   catch (e){
+  //    print(e);
+  //   }
+  //   }
+
+  static Future<void> deleteItem(int id) async {
+    final db = await SQLHelper.db();
+    try {
+      await db.delete("package", where: "id = ?", whereArgs: [id]);
+    } catch (err) {
+      debugPrint("Something went wrong when deleting an item: $err");
+    }
+  }
 }
+
+
+// after line 138
+// static Future<void> updateWalletAmount(String wallet, double amount) async {
+//   final db = await SQLHelper.db();
+//
+//   final result = await db.rawQuery(
+//     'SELECT * FROM wallets WHERE title = ?',
+//     [wallet],
+//   );
+//
+//   if (result.isEmpty) {
+//     await db.insert(
+//       'wallets',
+//       {
+//         "title": wallet,
+//         "amount": amount,
+//         "updatedAt": dateFormat.format(DateTime.now()),
+//       },
+//       conflictAlgorithm: sql.ConflictAlgorithm.replace,
+//     );
+//   } else {
+//     final total = result.first['amount'] ?? 0;
+//     final double parsedTotal =
+//     total is double ? total : double.tryParse(total.toString()) ?? 0;
+//     final calculatedTotal = parsedTotal + amount;
+//
+//     await db.rawUpdate(
+//       'UPDATE wallets SET amount = ?, updatedAt = ? WHERE title = ?',
+//       [
+//         calculatedTotal,
+//         dateFormat.format(DateTime.now()),
+//         wallet,
+//       ],
+//     );
+//   }
+//
+//   loadData4NavPagesClearFun();
+// }
+//
+// // create custom wallet
+// static Future createWalletItem(
+//     double amount, String? wallet, double? oldTransactionAmount) async {
+//   final db = await SQLHelper.db();
+//
+//   wallet = (wallet ?? "Cash");
+//   double calculatedTotal = 0.0;
+//
+//   final result = await db.rawQuery(
+//     'SELECT * FROM wallets WHERE title = ?',
+//     [wallet],
+//   );
+//
+//   if (result.isEmpty) {
+//     await db.insert(
+//       'wallets',
+//       {
+//         "title": wallet,
+//         "amount": amount,
+//         "updatedAt": dateFormat.format(DateTime.now()),
+//       },
+//       conflictAlgorithm: sql.ConflictAlgorithm.replace,
+//     );
+//   } else {
+//     oldTransactionAmount = (oldTransactionAmount ?? 0.0);
+//     final total = result.first['amount'] ?? 0;
+//     final double parsedTotal =
+//     total is double ? total : double.tryParse(total.toString()) ?? 0;
+//     calculatedTotal = parsedTotal + amount - oldTransactionAmount;
+//
+//     await db.rawUpdate(
+//       'UPDATE wallets SET amount = ?, updatedAt = ? WHERE title = ?',
+//       [
+//         calculatedTotal,
+//         dateFormat.format(DateTime.now()),
+//         wallet,
+//       ],
+//     );
+//   }
+// }
+//
+// // update item
+// static Future<int> updateItem(
+//     int id,
+//     String title,
+//     String? description,
+//     double amount,
+//     String? wallet,
+//     String type,
+//     String? category,
+//     double oldTransactionAmount,
+//     String dateTime,
+//     ) async {
+//   final db = await SQLHelper.db();
+//
+//   final data = {
+//     'title': title,
+//     'description': description,
+//     'amount': amount,
+//     'wallet': wallet,
+//     'type': type,
+//     'category': category,
+//     "createdAt": dateTime
+//   };
+//
+//   final result =
+//   db.update('transactions', data, where: "id = ?", whereArgs: [id]);
+//
+//   final amountDiff = amount - oldTransactionAmount;
+//
+//   await updateWalletAmount(wallet!, amountDiff);
+//   return result;
+// }
+//
+// // delete transaction record
+// static Future<void> deleteItem(int id, double amount, String wallet) async {
+//   final db = await SQLHelper.db();
+//   try {
+//     await db.delete("transactions", where: "id = ?", whereArgs: [id]);
+//
+//     final amountDiff = -amount;
+//     await updateWalletAmount(wallet, amountDiff);
+//     loadData4NavPagesClearFun();
+//   } catch (e) {
+//     print(e);
+//   }
+// }
+//
+// // drop database
+// static Future<void> dropTable() async {
+//   final db = await SQLHelper.db();
+//   await db.execute('DROP TABLE IF EXISTS transactions');
+//   await db.execute('DROP TABLE IF EXISTS wallets');
+//   await SQLHelper.createTables(db);
+//   deleteOption;
+//   initOption();
+//   loadData4NavPagesClearFun();
+// }
